@@ -1758,7 +1758,7 @@ xfceweather_dialog_response(GtkWidget *dlg,
     plugin_data *data = (plugin_data *) dialog->pd;
     icon_theme *theme;
     gboolean result;
-    gint i;
+    guint i;
 
     if (response == GTK_RESPONSE_HELP) {
         /* show help */
@@ -1775,8 +1775,10 @@ xfceweather_dialog_response(GtkWidget *dlg,
         for (i = 0; i < dialog->icon_themes->len; i++) {
             theme = g_array_index(dialog->icon_themes, icon_theme *, i);
             icon_theme_free(theme);
-            g_array_free(dialog->icon_themes, TRUE);
         }
+        g_array_free(dialog->icon_themes, FALSE);
+        if (dialog->timer_id != 0)
+            g_source_remove(dialog->timer_id);
         g_slice_free(xfceweather_dialog, dialog);
 
         xfce_panel_plugin_unblock_menu(data->plugin);
