@@ -36,6 +36,7 @@ libweather_la_CFLAGS =						\
 	$(LIBXFCE4UI_CFLAGS)						\
 	$(LIBXFCE4UTIL_CFLAGS)						\
 	$(GTK_CFLAGS)							\
+	$(JSON_CFLAGS)							\
 	$(SOUP_CFLAGS)							\
 	$(UPOWER_GLIB_CFLAGS)						\
 	$(LIBXML_CFLAGS)
@@ -46,6 +47,7 @@ libweather_la_LIBADD =						\
 	$(LIBXFCE4UTIL_LIBS)						\
 	$(LIBXFCE4UI_LIBS)						\
 	$(GTK_LIBS)							\
+	$(JSON_LIBS)							\
 	$(LIBXML_LIBS)							\
 	$(SOUP_LIBS)
 

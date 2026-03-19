@@ -161,6 +161,7 @@ schedule_data_update(gpointer user_data)
         gtk_spinner_stop(GTK_SPINNER(dialog->update_spinner));
         gtk_widget_hide(GTK_WIDGET(dialog->update_spinner));
     }
+    dialog->timer_id = 0;
     return FALSE;
 }
 
@@ -241,7 +242,7 @@ cb_lookup_altitude(SoupSession *session,
 {
     xfceweather_dialog *dialog = (xfceweather_dialog *) user_data;
     xml_altitude *altitude;
-    gdouble alt;
+    gdouble alt = 0;
 
     altitude = (xml_altitude *)
         parse_xml_document(msg, (XmlParseFunc) parse_altitude);

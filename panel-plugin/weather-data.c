@@ -552,13 +552,12 @@ is_night_time(const xml_astro *astro)
     time(&now_t);
 
     if (G_LIKELY(astro)) {
-        /* Polar night */
-        if (astro->sun_never_rises)
-            return TRUE;
-
-        /* Polar day */
-        if (astro->sun_never_sets)
-            return FALSE;
+        if (astro->sun_never_rises || astro->sun_never_sets) {
+            if (astro->solarmidnight_elevation > 0)
+                return FALSE;
+            if (astro->solarnoon_elevation <= 0)
+                return TRUE;
+        }
 
         /* Sunrise and sunset are known */
         if (difftime(astro->sunrise, now_t) > 0)
@@ -613,7 +612,7 @@ calculate_symbol(xml_time *timeslice,
 
     /* update symbol name */
     g_free(loc->symbol);
-    loc->symbol = g_strdup(symbol_names[loc->symbol_id]);
+    loc->symbol = g_strdup(get_symbol_for_id(loc->symbol_id));
 }
 
 

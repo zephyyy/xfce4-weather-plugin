@@ -304,7 +304,7 @@ weather_summary_get_logo(plugin_data *data)
     g_free(path);
     if (pixbuf == NULL)
         weather_http_queue_request(data->session,
-                                   "https://www.met.no/_/asset/no.met.metno:1497355518/images/met-logo.svg",
+                                   "https://met.no/filestore/met.no-logo.gif",
                                    logo_fetched, image);
     else {
         gtk_image_set_from_pixbuf(GTK_IMAGE(image), pixbuf);
@@ -443,12 +443,12 @@ create_summary_tab(plugin_data *data)
             value = g_strdup(_("\tSunset:\t\tThe sun never sets today.\n"));
             APPEND_TEXT_ITEM_REAL(value);
         } else {
-            sunrise = format_date(data->current_astro->sunrise, NULL, FALSE);
+            sunrise = format_date(data->current_astro->sunrise, NULL, TRUE);
             value = g_strdup_printf(_("\tSunrise:\t\t%s\n"), sunrise);
             g_free(sunrise);
             APPEND_TEXT_ITEM_REAL(value);
 
-            sunset = format_date(data->current_astro->sunset, NULL, FALSE);
+            sunset = format_date(data->current_astro->sunset, NULL, TRUE);
             value = g_strdup_printf(_("\tSunset:\t\t%s\n\n"), sunset);
             g_free(sunset);
             APPEND_TEXT_ITEM_REAL(value);
@@ -471,12 +471,12 @@ create_summary_tab(plugin_data *data)
                 g_strdup(_("\tMoonset:\tThe moon never sets today.\n"));
             APPEND_TEXT_ITEM_REAL(value);
         } else {
-            moonrise = format_date(data->current_astro->moonrise, NULL, FALSE);
+            moonrise = format_date(data->current_astro->moonrise, NULL, TRUE);
             value = g_strdup_printf(_("\tMoonrise:\t%s\n"), moonrise);
             g_free(moonrise);
             APPEND_TEXT_ITEM_REAL(value);
 
-            moonset = format_date(data->current_astro->moonset, NULL, FALSE);
+            moonset = format_date(data->current_astro->moonset, NULL, TRUE);
             value = g_strdup_printf(_("\tMoonset:\t%s\n"), moonset);
             g_free(moonset);
             APPEND_TEXT_ITEM_REAL(value);
@@ -548,15 +548,15 @@ create_summary_tab(plugin_data *data)
                                                &lnk_color, NULL);
     APPEND_BTEXT(_("\nCredits\n"));
     APPEND_LINK_ITEM(_("\tEncyclopedic information partly taken from\n\t\t"),
-                     _("Wikipedia"), "http://wikipedia.org", ltag_wiki);
+                     _("Wikipedia"), "https://wikipedia.org", ltag_wiki);
     APPEND_LINK_ITEM(_("\n\tElevation and timezone data provided by\n\t\t"),
                      _("GeoNames"),
-                     "http://geonames.org/", ltag_geonames);
+                     "https://geonames.org/", ltag_geonames);
     APPEND_LINK_ITEM(_("\n\tWeather and astronomical data from\n\t\t"),
                      _("The Norwegian Meteorological Institute"),
-                     "http://met.no/", ltag_metno);
+                     "https://met.no/", ltag_metno);
     g_object_set_data_full(G_OBJECT(ltag_img), "url",   /* url for image */
-                           g_strdup("http://met.no"), g_free);
+                           g_strdup("https://met.no"), g_free);
 
     g_signal_connect(G_OBJECT(view), "motion-notify-event",
                      G_CALLBACK(view_motion_notify), sum);
@@ -727,13 +727,13 @@ forecast_day_header_tooltip_text(xml_astro *astro)
                                     "Sunset: The sun never sets this day."
                                     "</small></tt>\n"));
         else {
-            sunrise = format_date(astro->sunrise, NULL, FALSE);
+            sunrise = format_date(astro->sunrise, NULL, TRUE);
             g_string_append_printf(text, _("<tt><small>"
                                            "Sunrise: %s"
                                            "</small></tt>\n"), sunrise);
             g_free(sunrise);
 
-            sunset = format_date(astro->sunset, NULL, FALSE);
+            sunset = format_date(astro->sunset, NULL, TRUE);
             g_string_append_printf(text, _("<tt><small>"
                                            "Sunset:  %s"
                                            "</small></tt>\n\n"), sunset);
@@ -760,13 +760,13 @@ forecast_day_header_tooltip_text(xml_astro *astro)
                               "Moonset: The moon never sets this day."
                               "</small></tt>\n"));
         else {
-            moonrise = format_date(astro->moonrise, NULL, FALSE);
+            moonrise = format_date(astro->moonrise, NULL, TRUE);
             g_string_append_printf(text, _("<tt><small>"
                                            "Moonrise: %s"
                                            "</small></tt>\n"), moonrise);
             g_free(moonrise);
 
-            moonset = format_date(astro->moonset, NULL, FALSE);
+            moonset = format_date(astro->moonset, NULL, TRUE);
             g_string_append_printf(text, _("<tt><small>"
                                            "Moonset:  %s"
                                            "</small></tt>"), moonset);
@@ -1091,7 +1091,7 @@ update_summary_subtitle(plugin_data *data)
 {
     time_t now_t;
     GTimeVal now;
-    gchar *title, *date;
+    gchar *title, *date, *date_format;
     guint update_interval;
     gint64 now_ms;
 
@@ -1105,7 +1105,13 @@ update_summary_subtitle(plugin_data *data)
         return FALSE;
 
     time(&now_t);
-    date = format_date(now_t, "%Y-%m-%d %H:%M:%S (%Z)", TRUE);
+#ifdef HAVE_UPOWER_GLIB
+    if (data->upower_on_battery)
+        date_format = "%Y-%m-%d %H:%M:%S (%Z)";
+    else
+#endif
+        date_format = "%Y-%m-%d %H:%M:%S (%Z)";
+    date = format_date(now_t, date_format, TRUE);
     title = g_strdup_printf("%s\n%s", data->location_name, date);
     g_free(date);
     xfce_titled_dialog_set_subtitle(XFCE_TITLED_DIALOG(data->summary_window),
