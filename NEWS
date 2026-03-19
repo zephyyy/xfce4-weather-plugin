@@ -1,3 +1,9 @@
+0.8.12 (unofficial gtk2 release)
+======
+- Migration to Sunrise API 3.0
+- Support solarnoon and solarmidnight (bug #15771)
+- New https endpoints for everything
+
 0.8.11
 ======
 - Use the latest sunrise API (2.0) (bug #14972)
