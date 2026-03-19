@@ -25,6 +25,7 @@
 
 #include "weather-parsers.h"
 #include "weather-data.h"
+#include "weather-translate.h"
 #include "weather.h"
 #include "weather-debug.h"
 
